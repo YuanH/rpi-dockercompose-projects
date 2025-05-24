@@ -1,0 +1,27 @@
+grafana-stack/grafana_data/
+grafana-stack/prometheus_data/
+network-stack/tailscale-data/
+
+# Credentials and secrets
+.env
+*.key
+*.pem
+*.crt
+*.cert
+*.password
+*.token
+
+# Cloudflare tunnel credentials
+.cloudflared/*.json
+.cloudflared/cert.pem
+
+# Docker secrets
+docker-compose.override.yml
+
+# Log files
+*.log
+
+# IDE and system files
+.DS_Store
+.idea/
+.vscode/
