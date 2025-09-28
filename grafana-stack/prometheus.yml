@@ -18,12 +18,19 @@ scrape_configs:
   - job_name: 'alloy-yuan-mini-m4'
     static_configs:
       - targets: ['yuan-mini.local:12345']
+  
   - job_name: 'yuan-mini-cadvisor'
     static_configs:
       - targets: ['yuan-mini:8082']
+  
+  - job_name: 'yuan-mini-node-exporter'
+    static_configs:
+      - targets: ['yuan-mini:9100']
+
   - job_name: 'raspberrypi4-node-exporter'
     static_configs:
       - targets: ['localhost:9100']
+
 alerting:
   alertmanagers:
     - static_configs:
