@@ -5,13 +5,25 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['localhost:9090']  # Access Prometheus itself
 
-  - job_name: 'node_exporter'
+  - job_name: 'grafana'
     static_configs:
-      - targets: ['node_exporter:9100']
+      - targets: ['localhost:3000']  # Access Grafana via localhost
 
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['localhost:3100']  # Access Loki via localhost
 
+  - job_name: 'alloy-yuan-mini-m4'
+    static_configs:
+      - targets: ['yuan-mini.local:12345']
+  - job_name: 'yuan-mini-cadvisor'
+    static_configs:
+      - targets: ['yuan-mini:8082']
+  - job_name: 'raspberrypi4-node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
 alerting:
   alertmanagers:
     - static_configs:

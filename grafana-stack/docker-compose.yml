@@ -1,9 +1,21 @@
 services:
+    cloudflared:
+        image: cloudflare/cloudflared:latest
+        container_name: cloudflared
+        restart: unless-stopped
+        ports:
+        - "20241:20241"
+        command: tunnel run
+        environment:
+        - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+        volumes:
+        - /home/yuan/repo/grafana-stack/.cloudflared:/home/nonroot/.cloudflared
     prometheus:
         image: prom/prometheus:latest
         container_name: prometheus
         ports:
             - "9090:9090"
+        network_mode: "host"            # <-- host network so Prometheus sees the host/Tailscale/LAN
         volumes:
             - ./prometheus.yml:/etc/prometheus/prometheus.yml
             - prometheus_data:/prometheus
@@ -12,6 +24,7 @@ services:
             - '--storage.tsdb.path=/prometheus'
             - '--web.console.libraries=/usr/share/prometheus/console_libraries'
             - '--web.console.templates=/usr/share/prometheus/consoles'
+        restart: unless-stopped
 
     node_exporter:
         image: prom/node-exporter:latest
@@ -32,38 +45,69 @@ services:
         container_name: grafana
         ports:
             - "3000:3000"
-        networks:
-            - shared-network
+        restart: unless-stopped
         volumes:
             - grafana_data:/var/lib/grafana
             - grafana_config:/etc/grafana/provisioning/datasources
-
         environment:
             - GF_SECURITY_ADMIN_USER=admin
             - GF_SECURITY_ADMIN_PASSWORD=admin
+        network_mode: "host"    # <-- host network so Grafana sees the host/Tailscale/LAN
         depends_on:
             - prometheus
+
+    loki:
+        image: grafana/loki:2.8.1
+        container_name: loki
+        ports:
+            - "3100:3100"
+        volumes:
+            - ./loki-config.yaml:/etc/loki/local-config.yaml:ro
+            - loki_data:/loki
+        restart: unless-stopped
+        command: -config.file=/etc/loki/local-config.yaml
+
+    tempo:
+        image: grafana/tempo:latest
+        container_name: tempo
+        ports:
+            - "3200:3200"
+        volumes:
+            - tempo_data:/var/lib/tempo
+            - ./tempo-config.yaml:/etc/tempo/tempo.yaml
+            - ./tempo-overrides.yaml:/etc/tempo/overrides.yaml
+        restart: unless-stopped
+        command:
+            - "--config.file=/etc/tempo/tempo.yaml"
 
 volumes:
     prometheus_data:
         driver: local
         driver_opts:
             type: none
-            device: "/home/yuan/repo/grafana-stack/prometheus_data"
+            device: "/home/yuan/repo/rpi-dockercompose-projects/grafana-stack/prometheus_data"
             o: bind
     grafana_data:
         driver: local
         driver_opts:
             type: none
-            device: "/home/yuan/repo/grafana-stack/grafana_data"
+            device: "/home/yuan/repo/rpi-dockercompose-projects/grafana-stack/grafana_data"
             o: bind
     grafana_config:
         driver: local
         driver_opts:
             type: none
-            device: "/home/yuan/repo/grafana-stack/grafana_config"
+            device: "/home/yuan/repo/rpi-dockercompose-projects/grafana-stack/grafana_config"
             o: bind
-
-networks:
-    shared-network:
-        external: true
+    loki_data:
+        driver: local
+        driver_opts:
+            type: none
+            device: "/home/yuan/repo/rpi-dockercompose-projects/grafana-stack/loki_data"
+            o: bind
+    tempo_data:
+        driver: local
+        driver_opts:
+            type: none
+            device: "/home/yuan/repo/rpi-dockercompose-projects/grafana-stack/tempo_data"
+            o: bind

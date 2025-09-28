@@ -1,5 +1,7 @@
 grafana-stack/grafana_data/
 grafana-stack/prometheus_data/
+grafana-stack/loki_data/
+grafana-stack/tempo_data/
 network-stack/tailscale-data/
 
 # Credentials and secrets

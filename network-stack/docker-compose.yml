@@ -1,38 +1,39 @@
-services:
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    restart: unless-stopped
-    ports:
-      - "20241:20241"
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
-    volumes:
-      - /home/yuan/repo/network-stack/.cloudflared:/home/nonroot/.cloudflared
-    networks:
-      - cloudflared-network
+# services:
+#   cloudflared:
+#     image: cloudflare/cloudflared:latest
+#     container_name: cloudflared
+#     restart: unless-stopped
+#     ports:
+#       - "20241:20241"
+#     command: tunnel run
+#     environment:
+#       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+#     volumes:
+#       - /home/yuan/repo/network-stack/.cloudflared:/home/nonroot/.cloudflared
+#     # networks:
+#     #   - cloudflared-network
 
-  tailscale:
-    image: tailscale/tailscale:latest
-    container_name: tailscale
-    restart: unless-stopped
-    privileged: true
-    network_mode: "host"  # Add this line to use host networking
-    environment:
-      - TS_AUTH_KEY=${TS_AUTH_KEY}
-      - TS_EXTRA_ARGS=--advertise-tags=tag:docker
-      - TS_STATE_DIR=/var/lib/tailscale  # Add this line
-      - TS_HOSTNAME=docker-pi  # Add this line - change name as needed
-    volumes:
-      - /dev/net/tun:/dev/net/tun
-      - ./tailscale-data:/var/lib/tailscale
-    cap_add:  # Add required capabilities
-      - NET_ADMIN
-      - NET_RAW
-    command: tailscaled  # Add this line
+#   # tailscale:
+#   #   image: tailscale/tailscale:latest
+#   #   container_name: tailscale
+#   #   restart: unless-stopped
+#   #   privileged: true
+#   #   network_mode: "host"  # Add this line to use host networking
+#   #   environment:
+#   #     - TS_AUTH_KEY=${TS_AUTH_KEY}
+#   #     - TS_EXTRA_ARGS=--advertise-tags=tag:docker
+#   #     - TS_STATE_DIR=/var/lib/tailscale  # Add this line
+#   #     - TS_HOSTNAME=docker-pi  # Add this line - change name as needed
+#   #   volumes:
+#   #     - /dev/net/tun:/dev/net/tun
+#   #     - ./tailscale-data:/var/lib/tailscale
+#   #   cap_add:  # Add required capabilities
+#   #     - NET_ADMIN
+#   #     - NET_RAW
+#   #   command: tailscaled  # Add this line
+    
 
-networks:
-    cloudflared-network:
-        name: shared-network
-        external: true
+# # networks:
+# #     cloudflared-network:
+# #         name: shared-network
+# #         external: true

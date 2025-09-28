@@ -1,0 +1,9 @@
+overrides:
+  defaults:
+    # Enable metrics-generator processors (optional)
+    metrics_generator:
+      processors: [service-graphs, span-metrics]
+
+    # Example limit tweaks (optional)
+    ingestion:
+      rate_strategy: local
