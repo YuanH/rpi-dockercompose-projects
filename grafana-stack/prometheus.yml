@@ -31,6 +31,14 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9100']
 
+  - job_name: 'wendademac-mini-node-exporter'
+    static_configs:
+      - targets: ['wendademac-mini:9100']
+
+  - job_name: 'wendademac-mini-cadvisor'
+    static_configs:
+      - targets: ['wendademac-mini:8082']
+
 alerting:
   alertmanagers:
     - static_configs:
